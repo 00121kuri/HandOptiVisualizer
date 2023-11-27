@@ -7,16 +7,18 @@ import sys
 sys.path.append('..')
 from lib import db
 
-def sort_sequence(db, optiSettingHash, envSettingHash, dateTime, group_query):
+def sort_sequence(db, optiSettingHashs, envSettingHashs, dateTimes, group_query):
     # 辞書内包表記を使用してクエリを作成
     query = {
-        'optiSettingHash': optiSettingHash if optiSettingHash else None,
-        'envSettingHash': envSettingHash if envSettingHash else None,
-        'dateTime': dateTime if dateTime else None
+        'optiSettingHash': {'$in': optiSettingHashs} if optiSettingHashs else None,
+        'envSettingHash': {'$in': envSettingHashs} if envSettingHashs else None,
+        'dateTime': {'$in': dateTimes} if dateTimes else None
     }
 
     # 空の値を持つキーを除去
     query = {k: v for k, v in query.items() if v is not None}
+
+    print(query)
 
     documents = db['result'].find(query)
 
@@ -38,8 +40,6 @@ def sort_sequence(db, optiSettingHash, envSettingHash, dateTime, group_query):
             'frameCount': 'max',
             'distance': 'mean',
             'angleDiff': 'mean',
-            'optiSettingHash': 'first',
-            'envSettingHash': 'first',
         })
     elif (group_query == 'optiSettingHash'):
         sequenceDf = sequenceDf.groupby(group_query).agg({
@@ -92,14 +92,15 @@ database = db.get_db()
 opti_settings = db.get_all_optiSettings()
 opti_settings = opti_settings['_id'].to_list()
 opti_settings.insert(0, None)
-selected_opti_setting = st.selectbox("Opti Setting", opti_settings)
+selected_opti_settings = st.multiselect("Opti Setting", opti_settings)
 
 env_settings = db.get_all_envSettings()
 env_settings = env_settings['_id'].to_list()
 env_settings.insert(0, None)
-selected_env_setting = st.selectbox("Env Setting", env_settings)
+selected_env_settings = st.multiselect("Env Setting", env_settings)
 
-selected_dateTime = st.text_input("Date Time")
+dateTimes = db.get_all_dateTime()
+selected_dateTimes = st.multiselect("Date Time", dateTimes)
 
 group_querys = ['optiSettingHash', 'envSettingHash', 'dateTime', 'sequenceId']
 group_query = st.selectbox("Group By", group_querys)
@@ -107,4 +108,4 @@ group_query = st.selectbox("Group By", group_querys)
 
 
 if st.button("Sort Sequence", type="primary"):
-    sort_sequence(database, selected_opti_setting, selected_env_setting, selected_dateTime, group_query)
+    sort_sequence(database, selected_opti_settings, selected_env_settings, selected_dateTimes, group_query)
