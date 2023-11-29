@@ -30,3 +30,8 @@ def get_all_dateTime():
     db = get_db()
     dateTimes = db['input'].distinct('dateTime')
     return dateTimes
+
+def get_optiSetting(hash):
+    db = get_db()
+    optiSetting = db['opti-setting'].find_one({'_id': hash})
+    return optiSetting
