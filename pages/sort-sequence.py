@@ -109,26 +109,37 @@ def sort_sequence(database, optiSettingHashs, envSettingHashs, dateTimes, group_
     
 
     # matplotlibでグラフを描画
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(3, 1, figsize=(10, 10), sharex=True, sharey=False)
     if (group_query == 'optiSettingHash' and selected_opti_param):
-        if selected_opti_param == 'isUsePreviousResult':
-            ax.bar(sequenceDf.index ,sequenceDf['score'])
-        else:
-            # x軸でソート
-            sequenceDf = sequenceDf.sort_values([selected_opti_param], ascending=True).reset_index()
-            # 点をプロット
-            ax.plot(sequenceDf[selected_opti_param], sequenceDf['score'])
+        # x軸でソート
+        sequenceDf = sequenceDf.sort_values([selected_opti_param], ascending=True)
+        # score, distance, angleDiffを描画
+        ax[0].plot(sequenceDf[selected_opti_param], sequenceDf['score'], color='green', label='score', marker='o')
+        ax[1].plot(sequenceDf[selected_opti_param], sequenceDf['distance'], color='red', label='distance', marker='o')
+        ax[2].plot(sequenceDf[selected_opti_param], sequenceDf['angleDiff'], color='blue', label='angleDiff', marker='o')
+        
     else:
-        ax.bar(sequenceDf.index ,sequenceDf['score'])
+        # score, distance, angleDiffをbarで描画
+        ax[0].bar(sequenceDf.index, sequenceDf['score'], color='green', label='score')
+        ax[1].bar(sequenceDf.index, sequenceDf['distance'], color='red', label='distance')
+        ax[2].bar(sequenceDf.index, sequenceDf['angleDiff'], color='blue', label='angleDiff')
     xlabel = group_query
     if (selected_opti_param):
         xlabel += ' - ' + selected_opti_param
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel('Score')
-    y_min, y_max = ax.get_ylim()
-    ax.set_ylim(0, y_max)
+    ax[2].set_xlabel(xlabel)
+
+    ax[0].set_ylabel('score')
+    ax[1].set_ylabel('distance [m]')
+    ax[2].set_ylabel('angleDiff [deg]')
+
+
+    # y軸を0スタートにする
+    #ax[0].set_ylim(0)
+
     #ax.set_title('Score Over Sequence ID')
-    ax.grid(True)
+    ax[0].grid(True)
+    ax[1].grid(True)
+    ax[2].grid(True)
     plt.tight_layout()
     st.pyplot(fig)
 
