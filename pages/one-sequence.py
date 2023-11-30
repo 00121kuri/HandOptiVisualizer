@@ -77,6 +77,11 @@ def one_sequence_viewer(db, sequenceId):
     plt.tight_layout()
     st.pyplot(fig)
 
+
+st.set_page_config(
+    layout="wide",
+)
+
 st.title("One Sequence")
 
 sequenceId = st.text_input("Sequence ID")

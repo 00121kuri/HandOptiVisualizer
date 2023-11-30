@@ -35,3 +35,8 @@ def get_optiSetting(hash):
     db = get_db()
     optiSetting = db['opti-setting'].find_one({'_id': hash})
     return optiSetting
+
+def get_all_sequenceIds():
+    db = get_db()
+    sequenceIds = db['result'].distinct('sequenceId')
+    return sequenceIds

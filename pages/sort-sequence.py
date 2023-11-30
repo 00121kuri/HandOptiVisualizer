@@ -135,6 +135,9 @@ def sort_sequence(database, optiSettingHashs, envSettingHashs, dateTimes, group_
     # 表
     st.table(sequenceDf)
 
+st.set_page_config(
+    layout="wide",
+)
 
 
 st.title("Sort Sequence Viewer")
