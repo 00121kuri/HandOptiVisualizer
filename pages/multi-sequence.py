@@ -125,6 +125,8 @@ def sort_sequence(database, optiSettingHashs, envSettingHashs, dateTimes, group_
         xlabel += ' - ' + selected_opti_param
     ax.set_xlabel(xlabel)
     ax.set_ylabel('Score')
+    y_min, y_max = ax.get_ylim()
+    ax.set_ylim(0, y_max)
     #ax.set_title('Score Over Sequence ID')
     ax.grid(True)
     plt.tight_layout()
