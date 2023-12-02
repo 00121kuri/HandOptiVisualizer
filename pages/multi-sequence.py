@@ -95,6 +95,9 @@ def multi_sequence_viewer(sequenceIds, y_axis='score', col_num=1, folder_name=''
         # texを保存
         with open(f'export/multi-sequence/{folder_name}/{folder_name}.tex', mode='w') as f:
             f.write(tex)
+        # クエリを保存
+        with open(f'export/multi-sequence/{folder_name}/{folder_name}-query.txt', mode='w') as f:
+            f.write(str(sequenceIds))
     
     
 

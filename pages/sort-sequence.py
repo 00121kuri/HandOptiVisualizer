@@ -2,6 +2,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from pymongo import MongoClient
 import pandas as pd
+import os
 
 import sys
 sys.path.append('..')
@@ -20,7 +21,7 @@ INIT_OPTI_SETTINGS = {
     'weightChromosomeDiff': 0,
 }
 
-def sort_sequence(database, optiSettingHashs, envSettingHashs, dateTimes, group_query, selected_opti_param):
+def sort_sequence(database, optiSettingHashs, envSettingHashs, dateTimes, group_query, selected_opti_param, file_name = ''):
     # 辞書内包表記を使用してクエリを作成
     query = {
         'optiSettingHash': {'$in': optiSettingHashs} if optiSettingHashs else None,
@@ -132,9 +133,15 @@ def sort_sequence(database, optiSettingHashs, envSettingHashs, dateTimes, group_
     ax[1].set_ylabel('distance [m]')
     ax[2].set_ylabel('angleDiff [deg]')
 
+    # それぞれのグラフのy軸の最大値を取得
+    max_score = sequenceDf['score'].max()
+    max_distance = sequenceDf['distance'].max()
+    max_angleDiff = sequenceDf['angleDiff'].max()
 
     # y軸を0スタートにする
-    #ax[0].set_ylim(0)
+    ax[0].set_ylim(0, max_score*1.1)
+    ax[1].set_ylim(0, max_distance*1.1)
+    ax[2].set_ylim(0, max_angleDiff*1.1)
 
     #ax.set_title('Score Over Sequence ID')
     ax[0].grid(True)
@@ -145,6 +152,20 @@ def sort_sequence(database, optiSettingHashs, envSettingHashs, dateTimes, group_
 
     # 表
     st.table(sequenceDf)
+
+    # latexの表として表示
+    tex = sequenceDf.to_latex(index=False)
+
+    # 保存
+    if file_name != '':
+        if not os.path.exists(f'export/sort-sequence/{file_name}'):
+            os.mkdir(f'export/sort-sequence/{file_name}')
+        fig.savefig(f'export/sort-sequence/{file_name}/{file_name}.png')
+        with open(f'export/sort-sequence/{file_name}/{file_name}.tex', mode='w') as f:
+            f.write(tex)
+        # クエリを保存
+        with open(f'export/sort-sequence/{file_name}/{file_name}-query.txt', mode='w') as f:
+            f.write(str(query))
 
 st.set_page_config(
     layout="wide",
@@ -174,6 +195,7 @@ selected_opti_param = None
 if (group_query == 'optiSettingHash'):
     selected_opti_param = st.text_input("Opti Setting Param", "maxSteps")
 
+file_name = st.text_input("File Name", value=f'')
 
 if st.button("Sort Sequence", type="primary"):
-    sort_sequence(database, selected_opti_settings, selected_env_settings, selected_dateTimes, group_query, selected_opti_param)
+    sort_sequence(database, selected_opti_settings, selected_env_settings, selected_dateTimes, group_query, selected_opti_param, file_name)
