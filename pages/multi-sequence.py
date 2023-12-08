@@ -90,6 +90,7 @@ def multi_sequence_viewer(sequenceIds, y_axis='score', col_num=1, folder_name=''
             os.makedirs(f'export/multi-sequence/{folder_name}')
         # pngを保存
         plt.savefig(f'export/multi-sequence/{folder_name}/{folder_name}-{y_axis}.png')
+        plt.savefig(f'export/multi-sequence/{folder_name}/{folder_name}-{y_axis}.eps')
         # csvを保存
         sequenceDf_group.to_csv(f'export/multi-sequence/{folder_name}/{folder_name}.csv', index=False)
         # texを保存

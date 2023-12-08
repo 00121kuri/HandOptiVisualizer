@@ -161,6 +161,7 @@ def sort_sequence(database, optiSettingHashs, envSettingHashs, dateTimes, group_
         if not os.path.exists(f'export/sort-sequence/{file_name}'):
             os.mkdir(f'export/sort-sequence/{file_name}')
         fig.savefig(f'export/sort-sequence/{file_name}/{file_name}.png')
+        fig.savefig(f'export/sort-sequence/{file_name}/{file_name}.eps')
         with open(f'export/sort-sequence/{file_name}/{file_name}.tex', mode='w') as f:
             f.write(tex)
         # クエリを保存
