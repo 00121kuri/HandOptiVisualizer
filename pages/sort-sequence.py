@@ -12,13 +12,14 @@ INIT_OPTI_SETTINGS = {
     'optiSettingHash': 'init',
     'mutationRate': -1,
     'sigma': -1,
-    'mean': -1,
+    'mean': 0,
     'worstScore': -1,
     'maxSteps': -1,
     'isUsePreviousResult': False,
     'weightDistance': 1,
     'weightRotation': 0.1,
     'weightChromosomeDiff': 0,
+    'isUseInputChromosome': False,
 }
 
 def sort_sequence(database, optiSettingHashs, envSettingHashs, dateTimes, group_query, selected_opti_param, file_name = ''):
@@ -194,7 +195,7 @@ group_query = st.selectbox("Group By", group_querys)
 
 selected_opti_param = None
 if (group_query == 'optiSettingHash'):
-    selected_opti_param = st.text_input("Opti Setting Param", "maxSteps")
+    selected_opti_param = st.text_input("Opti Setting Param")
 
 file_name = st.text_input("File Name", value=f'')
 
