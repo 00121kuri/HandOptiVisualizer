@@ -19,6 +19,7 @@ INIT_OPTI_SETTINGS = {
     'weightDistance': 1,
     'weightRotation': 0.1,
     'weightChromosomeDiff': 0,
+    'wieghtInputChromosomeDiff': 0,
     'isUseInputChromosome': False,
 }
 
@@ -163,6 +164,7 @@ def sort_sequence(database, optiSettingHashs, envSettingHashs, dateTimes, group_
             os.mkdir(f'export/sort-sequence/{file_name}')
         fig.savefig(f'export/sort-sequence/{file_name}/{file_name}.png')
         fig.savefig(f'export/sort-sequence/{file_name}/{file_name}.eps')
+        fig.savefig(f'export/sort-sequence/{file_name}/{file_name}.pdf')
         with open(f'export/sort-sequence/{file_name}/{file_name}.tex', mode='w') as f:
             f.write(tex)
         # クエリを保存
