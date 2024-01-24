@@ -83,6 +83,32 @@ def multi_sequence_viewer(sequenceIds, col_num=1, folder_name=''):
     tex = sequenceDf_group_table.to_latex(index=False)
     #st.latex(tex)
 
+    # 各シーケンスごとにまとめたグラフを表示
+    for i, sequenceId in enumerate(sequenceDf_group['sequenceId']):
+        fig = plt.figure(figsize=(10, 8))
+        fig.suptitle(f'Sequence ID: {sequenceId}')
+        for score_type in ScoreType:
+            if score_type.name_db not in sequenceDf.columns:
+                continue
+            if score_type.name_db == 'score':
+                ax = plt.subplot(3, 1, 1)
+            else:
+                ax = plt.subplot(3, 2, score_type.id+1)
+            sequence = sequenceDf[sequenceDf['sequenceId'] == sequenceId]
+            ax.bar(sequence['frameCount'], sequence[score_type.name_db], color=score_type.color)
+            ax.set_xlabel('Frame Count')
+            ax.set_ylabel(score_type.label)
+            ax.set_title(f'{score_type.label}')
+            ax.grid(True)
+        plt.tight_layout()
+        st.pyplot(fig)
+        # 画像を保存
+        if folder_name != '':
+            # pngを保存
+            plt.savefig(f'{export_dir}/{folder_name}-{sequenceId}.png')
+            # plt.savefig(f'export/multi-sequence/{folder_name}/{folder_name}-{sequenceId}.eps')
+            plt.savefig(f'{export_dir}/{folder_name}-{sequenceId}.pdf')
+
 
     # それぞれのsequenceIdの詳細を表示
     for sequenceId in sequenceDf_group['sequenceId']:

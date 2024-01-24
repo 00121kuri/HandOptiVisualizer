@@ -4,7 +4,7 @@ class ScoreType(Enum):
     SCORE = (1, 'score', 'score', 'Score', 'blue')
     DISTANCE = (2, 'distance', 'distanceScore', 'Distance', 'orange')
     ROTATION = (3, 'rotationScore', 'rotationScore', 'Rotation', 'green')
-    INIT_CHROMOSOME = (4, 'initChromosomeDiffScore', 'initChromosomeDiffScore', 'Initial Chromosome Diff', 'red')
+    INIT_CHROMOSOME = (4, 'initChromosomeDiffScore', 'initChromosomeDiffScore', 'Previous Chromosome Diff', 'red')
     INPUT_CHROMOSOME = (5, 'inputChromosomeDiffScore', 'inputChromosomeDiffScore', 'Input Chromosome Diff', 'purple')
 
     def __init__(self, id, name_db, name_csv, label, color) -> None:

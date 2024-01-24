@@ -39,7 +39,7 @@ def plot_steps(uploaded_files, max_steps, file_name):
     for score_type in ScoreType:
         fig = plt.figure(figsize=(8, 6))
         plt.plot(mean_df['frameCount'], mean_df[score_type.name_csv], color=score_type.color)
-        plt.xlabel('step count')
+        plt.xlabel('Step Count')
         plt.ylabel(score_type.label)
         plt.title(f'{score_type.label}')
         plt.grid(True)
@@ -60,7 +60,7 @@ def plot_steps(uploaded_files, max_steps, file_name):
         else:
             ax = plt.subplot(3, 2, score_type.id+1)
         plt.plot(mean_df['frameCount'], mean_df[score_type.name_csv], color=score_type.color)
-        plt.xlabel('step count')
+        plt.xlabel('Step Count')
         plt.ylabel(score_type.label)
         plt.title(f'{score_type.label}')
         plt.grid(True)
