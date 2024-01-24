@@ -4,6 +4,10 @@ import pandas as pd
 import time
 import os
 
+import sys
+sys.path.append('..')
+from lib.score import ScoreType
+
 def plot_steps(uploaded_files, max_steps, file_name):
     proggres_bar = st.progress(0, 'Loading Files...')
     percent_complete = 0.0
@@ -28,39 +32,37 @@ def plot_steps(uploaded_files, max_steps, file_name):
         mean_df += df_list[i]
     mean_df /= len(df_list)
     # 平均化したデータフレームを描画
-    y_axis_list = ['score', 'distanceScore', 'rotationScore', 'initChromosomeDiffScore', 'inputChromosomeDiffScore']
-    colors = ['blue', 'orange', 'green', 'red', 'purple']
 
     export_folder = f'export/plot-steps/{file_name}'
     
     
-    for y_axis in y_axis_list:
+    for score_type in ScoreType:
         fig = plt.figure(figsize=(8, 6))
-        plt.plot(mean_df['frameCount'], mean_df[y_axis], color=colors[y_axis_list.index(y_axis)])
+        plt.plot(mean_df['frameCount'], mean_df[score_type.name_csv], color=score_type.color)
         plt.xlabel('step count')
-        plt.ylabel(y_axis)
-        plt.title(f'{y_axis}')
+        plt.ylabel(score_type.label)
+        plt.title(f'{score_type.label}')
         plt.grid(True)
         # st.pyplot(fig)
         if (file_name != ''):
             # フォルダがなければ作成
             if not os.path.exists(export_folder):
                 os.makedirs(export_folder)
-            fig.savefig(f'{export_folder}/{file_name}-{max_steps}-{y_axis}.png')
+            fig.savefig(f'{export_folder}/{file_name}-{max_steps}-{score_type.name_csv}.png')
             # pdf も出力
-            fig.savefig(f'{export_folder}/{file_name}-{max_steps}-{y_axis}.pdf')
+            fig.savefig(f'{export_folder}/{file_name}-{max_steps}-{score_type.name_csv}.pdf')
     
     # グラフを並べて表示
     fig = plt.figure(figsize=(10, 8))
-    for y_axis in y_axis_list:
-        if y_axis == 'score':
+    for score_type in ScoreType:
+        if score_type.name_csv == 'score':
             ax = plt.subplot(3, 1, 1)
         else:
-            ax = plt.subplot(3, 2, y_axis_list.index(y_axis)+2)
-        plt.plot(mean_df['frameCount'], mean_df[y_axis], color=colors[y_axis_list.index(y_axis)])
+            ax = plt.subplot(3, 2, score_type.id+1)
+        plt.plot(mean_df['frameCount'], mean_df[score_type.name_csv], color=score_type.color)
         plt.xlabel('step count')
-        plt.ylabel(y_axis)
-        plt.title(f'{y_axis}')
+        plt.ylabel(score_type.label)
+        plt.title(f'{score_type.label}')
         plt.grid(True)
     plt.tight_layout()
     st.pyplot(fig)
