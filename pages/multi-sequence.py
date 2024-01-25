@@ -38,7 +38,9 @@ def multi_sequence_viewer(sequenceIds, col_num=1, folder_name=''):
         })
     
     # scoreでソート
-    sequenceDf_group = sequenceDf_group.sort_values(['score'], ascending=True).reset_index()
+    #sequenceDf_group = sequenceDf_group.sort_values(['score'], ascending=True).reset_index()
+    # sequenceIdsの順番にソート
+    sequenceDf_group = sequenceDf_group.reindex(sequenceIds).reset_index()
 
 
     # 複数のグラフを並べて表示, ユニークなsequenceIdの数に応じて行数を変更
