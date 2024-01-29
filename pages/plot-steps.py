@@ -37,6 +37,9 @@ def plot_steps(uploaded_files, max_steps, file_name):
     
     
     for score_type in ScoreType:
+        # 角度差はスキップ
+        if score_type == ScoreType.ANGLE_DIFF:
+            continue
         fig = plt.figure(figsize=(8, 6))
         plt.plot(mean_df['frameCount'], mean_df[score_type.name_csv], color=score_type.color)
         plt.xlabel('Step Count')
@@ -55,6 +58,9 @@ def plot_steps(uploaded_files, max_steps, file_name):
     # グラフを並べて表示
     fig = plt.figure(figsize=(10, 8))
     for score_type in ScoreType:
+        # 角度差はスキップ
+        if score_type == ScoreType.ANGLE_DIFF:
+            continue
         if score_type.name_csv == 'score':
             ax = plt.subplot(3, 1, 1)
         else:

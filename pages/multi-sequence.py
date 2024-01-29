@@ -48,6 +48,9 @@ def multi_sequence_viewer(sequenceIds, col_num=1, folder_name=''):
         # データに含まれていないscore_typeはスキップ
         if score_type.name_db not in sequenceDf.columns:
             continue
+        # 角度差はスキップ
+        if score_type == ScoreType.ANGLE_DIFF:
+            continue
         size = 2
         fig = plt.figure(figsize=(4 * size * int(col_num), 3 * size * math.ceil(len(sequenceIds)/col_num)))
         # y軸の範囲を揃えるために最大値を取得
@@ -91,6 +94,9 @@ def multi_sequence_viewer(sequenceIds, col_num=1, folder_name=''):
         fig.suptitle(f'Sequence ID: {sequenceId}')
         for score_type in ScoreType:
             if score_type.name_db not in sequenceDf.columns:
+                continue
+            # 角度差はスキップ
+            if score_type == ScoreType.ANGLE_DIFF:
                 continue
             if score_type.name_db == 'score':
                 ax = plt.subplot(3, 1, 1)

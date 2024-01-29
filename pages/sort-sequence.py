@@ -5,6 +5,9 @@ import pandas as pd
 import os
 
 import sys
+from lib.params import ParamType
+
+from lib.score import ScoreType
 sys.path.append('..')
 from lib import db
 
@@ -52,29 +55,29 @@ def sort_sequence(database, optiSettingHashs, envSettingHashs, dateTimes, group_
     # グループ化
     if (group_query == 'dateTime'):
         sequenceDf = sequenceDf.groupby(group_query).agg({
-            'score': 'mean',
+            ScoreType.SCORE.name_db: 'mean',
             'frameCount': 'max',
-            'distance': 'mean',
-            'angleDiff': 'mean',
+            ScoreType.DISTANCE.name_db: 'mean',
+            ScoreType.ANGLE_DIFF.name_db: 'mean',
         })
     elif (group_query == 'optiSettingHash'):
         sequenceDf = sequenceDf.groupby(group_query).agg({
-            'score': 'mean',
-            'distance': 'mean',
-            'angleDiff': 'mean',
+            ScoreType.SCORE.name_db: 'mean',
+            ScoreType.DISTANCE.name_db: 'mean',
+            ScoreType.ANGLE_DIFF.name_db: 'mean',
         })
     elif (group_query == 'envSettingHash'):
         sequenceDf = sequenceDf.groupby(group_query).agg({
-            'score': 'mean',
-            'distance': 'mean',
-            'angleDiff': 'mean',
+            ScoreType.SCORE.name_db: 'mean',
+            ScoreType.DISTANCE.name_db: 'mean',
+            ScoreType.ANGLE_DIFF.name_db: 'mean',
         })
     elif (group_query == 'sequenceId'):
         sequenceDf = sequenceDf.groupby(group_query).agg({
-            'score': 'mean',
+            ScoreType.SCORE.name_db: 'mean',
             'frameCount': 'max',
-            'distance': 'mean',
-            'angleDiff': 'mean',
+            ScoreType.DISTANCE.name_db: 'mean',
+            ScoreType.ANGLE_DIFF.name_db: 'mean',
             'dateTime': 'first',
             'optiSettingHash': 'first',
             'envSettingHash': 'first',
@@ -101,44 +104,44 @@ def sort_sequence(database, optiSettingHashs, envSettingHashs, dateTimes, group_
         
         # 選択したキーの値でグループ化
         if selected_opti_param:
-            sequenceDf = sequenceDf.groupby(selected_opti_param).agg({
-                'score': 'mean',
-                'distance': 'mean',
-                'angleDiff': 'mean',
+            sequenceDf = sequenceDf.groupby(selected_opti_param.param_name).agg({
+                ScoreType.SCORE.name_db: 'mean',
+                ScoreType.DISTANCE.name_db: 'mean',
+                ScoreType.ANGLE_DIFF.name_db: 'mean',
             })
         
     # scoreでソート
-    sequenceDf = sequenceDf.sort_values(['score'], ascending=True).reset_index()
+    sequenceDf = sequenceDf.sort_values([ScoreType.SCORE.name_db], ascending=True).reset_index()
     
 
     # matplotlibでグラフを描画
     fig, ax = plt.subplots(3, 1, figsize=(10, 10), sharex=True, sharey=False)
     if (group_query == 'optiSettingHash' and selected_opti_param):
         # x軸でソート
-        sequenceDf = sequenceDf.sort_values([selected_opti_param], ascending=True)
+        sequenceDf = sequenceDf.sort_values([selected_opti_param.param_name], ascending=True)
         # score, distance, angleDiffを描画
-        ax[0].plot(sequenceDf[selected_opti_param], sequenceDf['score'], color='green', label='score', marker='o')
-        ax[1].plot(sequenceDf[selected_opti_param], sequenceDf['distance'], color='red', label='distance', marker='o')
-        ax[2].plot(sequenceDf[selected_opti_param], sequenceDf['angleDiff'], color='blue', label='angleDiff', marker='o')
+        ax[0].plot(sequenceDf[selected_opti_param.param_name], sequenceDf[ScoreType.SCORE.name_db], color=ScoreType.SCORE.color, label=ScoreType.SCORE.label, marker='o')
+        ax[1].plot(sequenceDf[selected_opti_param.param_name], sequenceDf[ScoreType.DISTANCE.name_db], color=ScoreType.DISTANCE.color, label=ScoreType.DISTANCE.label, marker='o')
+        ax[2].plot(sequenceDf[selected_opti_param.param_name], sequenceDf[ScoreType.ANGLE_DIFF.name_db], color=ScoreType.ANGLE_DIFF.color, label=ScoreType.ANGLE_DIFF.label, marker='o')
         
     else:
         # score, distance, angleDiffをbarで描画
-        ax[0].bar(sequenceDf.index, sequenceDf['score'], color='green', label='score')
-        ax[1].bar(sequenceDf.index, sequenceDf['distance'], color='red', label='distance')
-        ax[2].bar(sequenceDf.index, sequenceDf['angleDiff'], color='blue', label='angleDiff')
+        ax[0].bar(sequenceDf.index, sequenceDf[ScoreType.SCORE.name_db], color=ScoreType.SCORE.color, label=ScoreType.SCORE.label)
+        ax[1].bar(sequenceDf.index, sequenceDf[ScoreType.DISTANCE.name_db], color=ScoreType.DISTANCE.color, label=ScoreType.DISTANCE.label)
+        ax[2].bar(sequenceDf.index, sequenceDf[ScoreType.ANGLE_DIFF.name_db], color=ScoreType.ANGLE_DIFF.color, label=ScoreType.ANGLE_DIFF.label)
     xlabel = group_query
     if (selected_opti_param):
-        xlabel += ' - ' + selected_opti_param
+        xlabel = selected_opti_param.label
     ax[2].set_xlabel(xlabel)
 
-    ax[0].set_ylabel('score')
-    ax[1].set_ylabel('distance [m]')
-    ax[2].set_ylabel('angleDiff [deg]')
+    ax[0].set_ylabel(ScoreType.SCORE.label)
+    ax[1].set_ylabel(ScoreType.DISTANCE.label + ' [m]')
+    ax[2].set_ylabel(ScoreType.ANGLE_DIFF.label + ' [deg]')
 
     # それぞれのグラフのy軸の最大値を取得
-    max_score = sequenceDf['score'].max()
-    max_distance = sequenceDf['distance'].max()
-    max_angleDiff = sequenceDf['angleDiff'].max()
+    max_score = sequenceDf[ScoreType.SCORE.name_db].max()
+    max_distance = sequenceDf[ScoreType.DISTANCE.name_db].max()
+    max_angleDiff = sequenceDf[ScoreType.ANGLE_DIFF.name_db].max()
 
     # y軸を0スタートにする
     ax[0].set_ylim(0, max_score*1.1)
@@ -197,7 +200,7 @@ group_query = st.selectbox("Group By", group_querys)
 
 selected_opti_param = None
 if (group_query == 'optiSettingHash'):
-    selected_opti_param = st.text_input("Opti Setting Param")
+    selected_opti_param = st.selectbox("Opti Param", [param_type for param_type in ParamType])
 
 file_name = st.text_input("File Name", value=f'')
 

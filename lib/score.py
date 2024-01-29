@@ -6,6 +6,7 @@ class ScoreType(Enum):
     ROTATION = (3, 'rotationScore', 'rotationScore', 'Rotation', 'green')
     INIT_CHROMOSOME = (4, 'initChromosomeDiffScore', 'initChromosomeDiffScore', 'Previous Chromosome Diff', 'red')
     INPUT_CHROMOSOME = (5, 'inputChromosomeDiffScore', 'inputChromosomeDiffScore', 'Input Chromosome Diff', 'purple')
+    ANGLE_DIFF = (6, 'angleDiff', 'angleDiff', 'Angle Diff', 'brown')
 
     def __init__(self, id, name_db, name_csv, label, color) -> None:
         super().__init__()
