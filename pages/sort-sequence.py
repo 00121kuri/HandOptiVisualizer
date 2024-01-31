@@ -194,7 +194,7 @@ selected_env_settings = st.multiselect("Env Setting", env_settings)
 dateTimes = db.get_all_dateTime()
 selected_dateTimes = st.multiselect("Date Time", dateTimes)
 
-group_querys = ['optiSettingHash', 'envSettingHash', 'dateTime', 'sequenceId']
+group_querys = ['sequenceId', 'optiSettingHash', 'envSettingHash', 'dateTime']
 group_query = st.selectbox("Group By", group_querys)
 
 

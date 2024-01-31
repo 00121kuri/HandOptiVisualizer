@@ -3,12 +3,13 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 
-load_dotenv()
+load_dotenv(override=True)
 DB_IP = os.getenv("DB_IP")
 DB_PORT = int(os.getenv("DB_PORT"))
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 DB_NAME = os.getenv("DB_NAME")
+print(f"Connect to {DB_IP}")
 
 
 def get_db():

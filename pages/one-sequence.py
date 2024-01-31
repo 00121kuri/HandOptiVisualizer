@@ -7,6 +7,9 @@ import sys
 sys.path.append('..')
 from lib import db
 
+plt.rc('text', usetex=True)
+plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
+
 
 def one_sequence_viewer(db, sequenceId):
     st.write(f"Sequence ID: {sequenceId}")
