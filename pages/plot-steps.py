@@ -40,12 +40,13 @@ def plot_steps(uploaded_files, max_steps, file_name):
         # 角度差はスキップ
         if score_type == ScoreType.ANGLE_DIFF:
             continue
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure(figsize=(4, 3))
         plt.plot(mean_df['frameCount'], mean_df[score_type.name_csv], color=score_type.color)
         plt.xlabel('Step Count')
         plt.ylabel(score_type.label)
-        plt.title(f'{score_type.label}')
+        # plt.title(f'{score_type.label}')
         plt.grid(True)
+        plt.tight_layout()
         # st.pyplot(fig)
         if (file_name != ''):
             # フォルダがなければ作成
