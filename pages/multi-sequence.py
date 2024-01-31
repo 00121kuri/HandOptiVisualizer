@@ -13,9 +13,13 @@ from lib import db
 from lib.score import ScoreType
 
 
-def multi_sequence_viewer(sequenceIds, col_num=1, folder_name=''):
+def multi_sequence_viewer(sequenceIds, col_num=1, folder_name='', sub_titles=''):
     database = db.get_db()
     documents = database['result'].find({'sequenceId': {'$in': sequenceIds}})
+
+    sub_title_list = sub_titles.split('@')
+    if len(sub_title_list) != len(sequenceIds):
+        sub_title_list = []
     
     sequenceDf = pd.DataFrame(list(documents))
 
@@ -48,7 +52,7 @@ def multi_sequence_viewer(sequenceIds, col_num=1, folder_name=''):
         # データに含まれていないscore_typeはスキップ
         if score_type.name_db not in sequenceDf.columns:
             continue
-        size = 2
+        size = 1
         fig = plt.figure(figsize=(4 * size * int(col_num), 3 * size * math.ceil(len(sequenceIds)/col_num)))
         # y軸の範囲を揃えるために最大値を取得
         max_y = sequenceDf[score_type.name_db].max()
@@ -60,7 +64,8 @@ def multi_sequence_viewer(sequenceIds, col_num=1, folder_name=''):
             ax.set_xlabel('Frame Count')
             ax.set_ylim(0, max_y*1.1)
             ax.set_ylabel(score_type.label)
-            # ax.set_title(f'{score_type.label} - Sequence ID: {sequenceId}')
+            if (len(sub_title_list) != 0):
+                ax.set_title(f'{sub_title_list[i]}')
             ax.grid(True)
         plt.tight_layout()
         st.pyplot(fig)
@@ -115,26 +120,29 @@ def multi_sequence_viewer(sequenceIds, col_num=1, folder_name=''):
             plt.savefig(f'{export_dir}/{folder_name}-{sequenceId}.pdf')
 
     # 各シーケンスごとに個々のグラフを保存
-    for i, sequenceId in enumerate(sequenceDf_group['sequenceId']):
-        for score_type in ScoreType:
-            if score_type.name_db not in sequenceDf.columns:
-                continue
-            fig = plt.figure(figsize=(4, 3))
-            sequence = sequenceDf[sequenceDf['sequenceId'] == sequenceId]
-            plt.bar(sequence['frameCount'], sequence[score_type.name_db], color=score_type.color)
-            plt.xlabel('Frame Count')
-            plt.ylabel(score_type.label)
-            plt.title(f'{score_type.label}')
-            plt.grid(True)
-            plt.tight_layout()
-            # st.pyplot(fig)
-            # 画像を保存
-            if (folder_name != ''):
+    if (folder_name != ''):
+        for i, sequenceId in enumerate(sequenceDf_group['sequenceId']):
+            for score_type in ScoreType:
+                # y軸の範囲を揃えるために最大値を取得
+                max_y = sequenceDf[score_type.name_db].max()
+                if score_type.name_db not in sequenceDf.columns:
+                    continue
+                fig = plt.figure(figsize=(4, 3))
+                sequence = sequenceDf[sequenceDf['sequenceId'] == sequenceId]
+                plt.bar(sequence['frameCount'], sequence[score_type.name_db], color=score_type.color)
+                plt.xlabel('Frame Count')
+                plt.ylabel(score_type.label)
+                plt.ylim(0, max_y*1.1)
+                plt.grid(True)
+                plt.tight_layout()
+                # 画像を保存
                 # フォルダがなければ作成
                 sequence_dir = f'export/multi-sequence/{folder_name}/{sequenceId}'
                 if not os.path.exists(sequence_dir):
                     os.makedirs(sequence_dir)
                 plt.savefig(f'{sequence_dir}/{score_type.name_db}.pdf')
+                # グラフを閉じる
+                plt.close(fig)
 
 
     # それぞれのsequenceIdの詳細を表示
@@ -161,6 +169,9 @@ def multi_sequence_viewer(sequenceIds, col_num=1, folder_name=''):
         # クエリを保存
         with open(f'{export_dir}/{folder_name}-query.txt', mode='w') as f:
             f.write(str(sequenceIds))
+        # タイトルを保存
+            with open(f'{export_dir}/{folder_name}-title.txt', mode='w') as f:
+                f.write(sub_titles)
     
     
 
@@ -178,13 +189,13 @@ col_num = st.slider("Column Num", 1, 5, 1)
 # 生成したグラフを保存
 file_name = st.text_input('File Name', value=f'')
 
+# グラフのサブタイトル
+sub_titles = st.text_input('Sub Titles (split by @)', value=f'')
+
 database = db.get_db()
 
 if st.button("Show") and sequenceIds:
-    if file_name != '':
-        multi_sequence_viewer(sequenceIds, col_num, file_name)
-    else:
-        multi_sequence_viewer(sequenceIds, col_num)
+    multi_sequence_viewer(sequenceIds, col_num, file_name, sub_titles)
 else:
     st.write("Please input Sequence ID !")
 
