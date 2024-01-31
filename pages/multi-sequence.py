@@ -114,6 +114,28 @@ def multi_sequence_viewer(sequenceIds, col_num=1, folder_name=''):
             # plt.savefig(f'export/multi-sequence/{folder_name}/{folder_name}-{sequenceId}.eps')
             plt.savefig(f'{export_dir}/{folder_name}-{sequenceId}.pdf')
 
+    # 各シーケンスごとに個々のグラフを保存
+    for i, sequenceId in enumerate(sequenceDf_group['sequenceId']):
+        for score_type in ScoreType:
+            if score_type.name_db not in sequenceDf.columns:
+                continue
+            fig = plt.figure(figsize=(4, 3))
+            sequence = sequenceDf[sequenceDf['sequenceId'] == sequenceId]
+            plt.bar(sequence['frameCount'], sequence[score_type.name_db], color=score_type.color)
+            plt.xlabel('Frame Count')
+            plt.ylabel(score_type.label)
+            plt.title(f'{score_type.label}')
+            plt.grid(True)
+            plt.tight_layout()
+            # st.pyplot(fig)
+            # 画像を保存
+            if (folder_name != ''):
+                # フォルダがなければ作成
+                sequence_dir = f'export/multi-sequence/{folder_name}/{sequenceId}'
+                if not os.path.exists(sequence_dir):
+                    os.makedirs(sequence_dir)
+                plt.savefig(f'{sequence_dir}/{score_type.name_db}.pdf')
+
 
     # それぞれのsequenceIdの詳細を表示
     for sequenceId in sequenceDf_group['sequenceId']:
