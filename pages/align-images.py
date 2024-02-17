@@ -3,13 +3,15 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import os
 
-def align_images(uploaded_files, folder_name, file_name, prefix, suffix):
+def align_images(uploaded_files, folder_name, file_name, prefix, suffix, title_position):
     images = sort_images(uploaded_files)
+    title_y = 1 if title_position == 'Top' else -0.2
     fig, ax = plt.subplots(1, len(images), figsize=(2 * len(images) * 0.9, 2), dpi=200)
     for i, image in enumerate(images):
         ax[i].imshow(plt.imread(image))
         title = prefix + image.name.split('.')[0] + suffix
-        ax[i].set_title(title, y=-0.2)
+        if title_position != 'None':
+            ax[i].set_title(title, y=title_y)
         ax[i].axis('off')
     plt.tight_layout()
     st.pyplot(fig)
@@ -25,6 +27,7 @@ def align_images(uploaded_files, folder_name, file_name, prefix, suffix):
         file_name = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
     fig.savefig(f'{export_folder}/{file_name}.png', bbox_inches='tight')
     fig.savefig(f'{export_folder}/{file_name}.pdf', bbox_inches='tight')
+    fig.savefig(f'{export_folder}/{file_name}.svg', bbox_inches='tight')
 
 
 def sort_images(uploaded_files):
@@ -41,6 +44,7 @@ folder_name = st.text_input('Folder Name', '')
 file_name = st.text_input('File Name', '')
 prefix = st.text_input('Prefix', 'Frame: ')
 suffix = st.text_input('Suffix', '')
+title_position = st.selectbox('Title Position', ['Top', 'Bottom', 'None'])
 
 if st.button('Align Images') and uploaded_files:
-    align_images(uploaded_files, folder_name, file_name, prefix, suffix)
+    align_images(uploaded_files, folder_name, file_name, prefix, suffix, title_position)
