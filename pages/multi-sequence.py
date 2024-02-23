@@ -13,7 +13,7 @@ from lib import db
 from lib.score import ScoreType
 
 
-def multi_sequence_viewer(sequenceIds, col_num=1, folder_name='', sub_titles=''):
+def multi_sequence_viewer(sequenceIds, col_num=1, folder_name='', sub_titles='', label_size=10):
     database = db.get_db()
     documents = database['result'].find({'sequenceId': {'$in': sequenceIds}})
 
@@ -61,9 +61,9 @@ def multi_sequence_viewer(sequenceIds, col_num=1, folder_name='', sub_titles='')
             # 順番に配置する
             ax = fig.add_subplot(math.ceil(len(sequenceIds)/col_num), col_num, i+1)
             ax.bar(sequence['frameCount'], sequence[score_type.name_db], color=score_type.color)
-            ax.set_xlabel('Frame Count')
+            ax.set_xlabel('Frame Count', fontsize=label_size)
             ax.set_ylim(0, max_y*1.1)
-            ax.set_ylabel(score_type.label)
+            ax.set_ylabel(score_type.label, fontsize=label_size)
             if (len(sub_title_list) != 0):
                 ax.set_title(f'{sub_title_list[i]}')
             ax.grid(True)
@@ -192,10 +192,13 @@ file_name = st.text_input('File Name', value=f'')
 # グラフのサブタイトル
 sub_titles = st.text_input('Sub Titles (split by @)', value=f'')
 
+# 文字のサイズ
+label_size = st.slider("Label Size", 10, 30, 10)
+
 database = db.get_db()
 
 if st.button("Show") and sequenceIds:
-    multi_sequence_viewer(sequenceIds, col_num, file_name, sub_titles)
+    multi_sequence_viewer(sequenceIds, col_num, file_name, sub_titles, label_size)
 else:
     st.write("Please input Sequence ID !")
 
